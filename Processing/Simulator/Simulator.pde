@@ -4,6 +4,7 @@ int RECT_SIZE = 40;
 int RECT_SIZE2 = RECT_SIZE + 10;
 int OFS = 50;
 int buffer[] = new int[XRES*YRES];
+int[] discoOfs = new int[] {8,88,144,48,180,244,24,136,172,16,228,112,80,204,152,56,188,36,168,72,236,128,220,32,80,40,252104,64,196,212,120,160};
 
 int mode = 0;
 ColorSet cs, csColor, csWhite;
@@ -40,7 +41,7 @@ void draw() {
   frames++;
 }
 
-
+  
 void generateBuffer() {
   int ofs=0;
 
@@ -71,40 +72,12 @@ void generateBuffer() {
     }
     cs = csColor;
     break;
+    
   case 2:
     int n = frames%255;
-    buffer[0] = n+8;
-    buffer[1] = n+88;    
-    buffer[2] = n+144;
-    buffer[3] = n+48;    
-    buffer[4] = n+180;
-    buffer[5] = n+244;    
-    buffer[6] = n+24;
-    buffer[7] = n+136;    
-    buffer[8] = n+172;
-    buffer[9] = n+16;    
-    buffer[10] = n+228;
-    buffer[11] = n+112;    
-    buffer[12] = n+80;
-    buffer[13] = n+204;    
-    buffer[14] = n+152;
-    buffer[15] = n+56;    
-    buffer[16] = n+188;
-    buffer[17] = n+168;    
-    buffer[18] = n+72;
-    buffer[19] = n+236;    
-    buffer[20] = n+128;
-    buffer[21] = n+220;    
-    buffer[22] = n+32;
-    buffer[23] = n+80;    
-    buffer[24] = n+40;
-    buffer[25] = n+252;    
-    buffer[26] = n+104;
-    buffer[27] = n+64;    
-    buffer[28] = n+196;
-    buffer[29] = n+212;    
-    buffer[30] = n+120;    
-    buffer[31] = n+160;
+    for (int i=0; i<32; i++) {
+      buffer[i] = n+discoOfs[i];
+    }
     cs = csColor;
     break;
   }
