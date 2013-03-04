@@ -129,16 +129,19 @@ void applyColorSet() {
     unsigned int col = getSmoothColor(buffer[srcOfs]);    
 
     //the first pixel is unused
-    strip.setPixelColor(i+1, col);
+    leds[i].r = (col>>16)&255;
+    leds[i].g = (col>>8)&255; 
+    leds[i].b = col&255;     
   }
 
   //blank unused modules
-  strip.setPixelColor(0, 0);
+/*  strip.setPixelColor(0, 0);
   strip.setPixelColor(13, 0);
   strip.setPixelColor(14, 0);
   strip.setPixelColor(15, 0);
+*/
+  FastSPI_LED.show();
 
-  strip.show();    
 }
 
 //----------------------------

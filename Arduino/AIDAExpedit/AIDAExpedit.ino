@@ -62,13 +62,30 @@
 //one pixel uses 3 leds
 #define LED_GROUP 3
 
+//which input pin is used to read the button
 #define INPUT_BUTTON_PIN 5
 
-// --------------------------------------------
+//speed for the animation
+#define ANIMATION_DELAY 512
 
+//read the button state each X ms
+#define BUTTONDELAY 400
+
+//use serial debug or not
+#define USE_SERIAL_DEBUG 1
+
+//how many animation modi exist
+#define MAX_MODE 2
+
+// --------------------------------------------
+//State of the button
 int buttonState;
 
+//display mode
+int contentMode = 0;
 
+//internal frame buffer
+byte buffer[NUM_VISIBLE_LEDS];
 
 // Sometimes chipsets wire in a backwards sort of way
 struct CRGB { 
@@ -84,6 +101,11 @@ struct CRGB *leds;
 //      setup
 // --------------------------------------------
 void setup() {
+#ifdef USE_SERIAL_DEBUG
+  Serial.begin(115200);
+  Serial.println("HI AIDA!");
+#endif
+
   pinMode(INPUT_BUTTON_PIN, INPUT);    // declare pushbutton as input
   buttonState = 0;
   
@@ -95,13 +117,16 @@ void setup() {
   FastSPI_LED.init();
   FastSPI_LED.start();
   leds = (struct CRGB*)FastSPI_LED.getRGBData(); 
-
+  
+#ifdef USE_SERIAL_DEBUG
+  Serial.println("Setup done");
+#endif
+  
 }
 
 
 void loop() {
   updateButtonState();
   
-  
-  FastSPI_LED.show();
+  generateContent();  
 }
