@@ -47,23 +47,41 @@ void generateBuffer() {
 
   switch (mode) {
   case 0:
-    int cnt = (frames/2)%4;
+    int ycnt = (frames/8)%5;
+    int yofs = 7*XRES;
+    int xofs = 0;
     
-    for (int y=0; y<YRES/2; y++) {      
-      for (int x=0; x<XRES; x++) {
-        if (cnt>y) {
-          buffer[ofs++] = 0;
-        } else {
-          buffer[ofs++] = 128;
-        }
-      }
+    //all white
+    for (int y=0; y<YRES*XRES; y++) {
+      buffer[y] = 128;
     }
-    
+        
+    for (int y=0; y<YRES/2; y++) {
+      ofs = y*XRES;
+      for (int x=0; x<XRES/2; x++) {        
+        if (ycnt>=y || (ycnt)>(x+1)) {
+          buffer[ofs] = 0;
+          buffer[ofs+yofs] = 0;
+        }
+        ofs++;
+      }
+      yofs -= 2*XRES;      
+    }
+
+    //mirror x
+    for (int y=0; y<YRES; y++) {
+      ofs = y*XRES;
+      buffer[ofs+3] = buffer[ofs]; 
+      buffer[ofs+2] = buffer[ofs+1]; 
+    }    
     cs = csWhite;
+    if (ycnt==4) {
+      mode++;
+    }
     break;
     
   case 1:
-    int col=0;
+    int col=0;    
     for (int y=0; y<YRES; y++) {      
       for (int x=0; x<XRES; x++) {
         buffer[ofs++] = (col+frames)%255;
