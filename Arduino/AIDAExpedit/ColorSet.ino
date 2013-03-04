@@ -107,6 +107,11 @@ unsigned int calcSmoothColor(unsigned long col1, unsigned long col2, byte pos) {
   g=(g*mul + g2*oppositeColor) >> 8;
   b=(b*mul + b2*oppositeColor) >> 8;
 
+  //apply gamma tab
+  r=pgm_read_byte_near(gamma+r);
+  g=pgm_read_byte_near(gamma+g);
+  b=pgm_read_byte_near(gamma+b);
+
   //change next line
   return Color(b,r,g);
 }
