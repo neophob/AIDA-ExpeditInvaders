@@ -6,7 +6,7 @@ int OFS = 50;
 int buffer[] = new int[XRES*YRES];
 
 int mode = 0;
-ColorSet cs;
+ColorSet cs, csColor, csWhite;
 int frames=0;
 
 void setup() {
@@ -15,14 +15,12 @@ void setup() {
   frameRate(20);
   smooth();
 
-  cs = new ColorSet("AIDA", new int[] 
-  { 
-    color(255, 0, 0), color(128, 0, 128), color(0, 0, 255), color(128, 0, 128)
-  } 
-  );
+  csColor = new ColorSet("AIDA", new int[] { 
+    color(255, 0, 0), color(128, 0, 128), color(0, 0, 255), color(128, 0, 128) });
+  csWhite = new ColorSet("BW", new int[] { 
+    color(0, 0, 0), color(255, 255, 255) });
+  cs = csWhite;
 }
-
-
 
 
 void draw() {
@@ -40,16 +38,30 @@ void draw() {
   
   frames++;
   frames++;
-  frames++;
-  frames++;
 }
 
 
 void generateBuffer() {
+  int ofs=0;
 
   switch (mode) {
   case 0:
-    int ofs=0;
+    int cnt = (frames/2)%4;
+    
+    for (int y=0; y<YRES/2; y++) {      
+      for (int x=0; x<XRES; x++) {
+        if (cnt>y) {
+          buffer[ofs++] = 0;
+        } else {
+          buffer[ofs++] = 128;
+        }
+      }
+    }
+    
+    cs = csWhite;
+    break;
+    
+  case 1:
     int col=0;
     for (int y=0; y<YRES; y++) {      
       for (int x=0; x<XRES; x++) {
@@ -57,8 +69,9 @@ void generateBuffer() {
       }
       col += 8;
     }
+    cs = csColor;
     break;
-  case 1:
+  case 2:
     int n = frames%255;
     buffer[0] = n+8;
     buffer[1] = n+88;    
@@ -92,6 +105,7 @@ void generateBuffer() {
     buffer[29] = n+212;    
     buffer[30] = n+120;    
     buffer[31] = n+160;
+    cs = csColor;
     break;
   }
 }
@@ -103,7 +117,7 @@ void keyPressed() {
     return;
   }
   mode++;
-  if (mode>1) {
+  if (mode>2) {
     mode=0;
   }
 }
