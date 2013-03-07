@@ -19,7 +19,7 @@ void setup() {
   csColor = new ColorSet("AIDA", new int[] { 
     color(255, 0, 0), color(128, 0, 128), color(0, 0, 255), color(128, 0, 128) });
   csWhite = new ColorSet("BW", new int[] { 
-    color(0, 0, 0), color(255, 255, 255) });
+    color(0, 0, 0), color(0, 0, 0), color(255, 255, 255), color(255, 255, 255) });
   cs = csWhite;
 }
 
@@ -37,7 +37,7 @@ void draw() {
     }
   }
   
-  frames++;
+//  frames++;
   frames++;
 }
 
@@ -108,6 +108,9 @@ void keyPressed() {
     return;
   }
   mode++;
+  if (mode==0) {
+    frames=0; 
+  }
   if (mode>2) {
     mode=0;
   }

@@ -68,7 +68,16 @@ static PROGMEM prog_uchar led_mapping[NUM_VISIBLE_LEDS] = {
 };
 
 
+static PROGMEM prog_uchar discoOfs[32] = 
+  {8,88,144,48,180,244,24,136,
+   172,16,228,112,80,204,152,56,
+   188,36,168,72,236,128,220,32,
+   80,40,252,104,64,196,212,120};
+
+
+
 unsigned long lastDrawTimestamp = 0;
+unsigned int frames = 0;
 
 boolean timeOutNotReached(unsigned long lastTime, unsigned int timeout) {
   unsigned long time = millis()-lastTime;
@@ -77,7 +86,8 @@ boolean timeOutNotReached(unsigned long lastTime, unsigned int timeout) {
 
 
 void generateContent() {
-
+  int col, x, y, ofs;
+  
   if (timeOutNotReached(lastDrawTimestamp, ANIMATION_DELAY)) {
     return;
   }
@@ -85,22 +95,40 @@ void generateContent() {
   lastDrawTimestamp = millis();
   
   //generate buffer content
-  for (int i=0; i < BUFFER_SIZE; i++) {
+  //for (int i=0; i < BUFFER_SIZE; i++) {
     switch (contentMode) {
       case 0:
         //fadein
-        buffer[i] = 0+i;
+        for (y=0; y<YRES; y++) {      
+          for (x=0; x<XRES; x++) {
+            buffer[ofs++] = x+y;
+          }
+        }
         break;
       case 1:
         //high heel mode
-        buffer[i] = 70+i;
+//        buffer[i] = 70+i;
+        col=0; 
+        ofs=0;
+        for (y=0; y<YRES; y++) {      
+          for (x=0; x<XRES; x++) {
+            buffer[ofs++] = (col+frames)%255;
+          }
+          col += 8;
+        }
         break;
       case 2:
         //disco mode
-        buffer[i] = 140+i;
+        int n = frames%255;
+        for (ofs=0; ofs<BUFFER_SIZE; ofs++) {          
+          buffer[ofs] = n+pgm_read_byte(&discoOfs[ofs]);
+        }
+        
         break;
     }  
-  }
+//  }
+  
+  //TODO: if contentMode==0 switch to mode 1 if animation is finished!
   
   byte srcOfs=0;
   //map buffer to output
@@ -136,28 +164,33 @@ void generateContent() {
   }
   
   FastSPI_LED.show(); 
+  frames++;
 }
 
 
+
 void initMode(byte mode) {
-    unsigned long initialColor[3];
+    unsigned long initialColor[4];
     switch (mode) {
       case 0:
         initialColor[0] = 0xffffff;  //white to black
-        initialColor[1] = 0x7f7f7f;
+        initialColor[1] = 0xffffff;
         initialColor[2] = 0x000000;
+        initialColor[3] = 0x000000;
         loadColorSet(initialColor);
         break; 
       case 1:
         initialColor[0] = 0xff0000;  //
-        initialColor[1] = 0x00ff00;
+        initialColor[1] = 0x7f007f;
         initialColor[2] = 0x0000ff;
+        initialColor[3] = 0x7f007f;
         loadColorSet(initialColor);
         break; 
       case 2:
-        initialColor[0] = 0xff0000;
-        initialColor[1] = 0x00ff00;
+        initialColor[0] = 0xff0000;  //
+        initialColor[1] = 0x7f007f;
         initialColor[2] = 0x0000ff;
+        initialColor[3] = 0x7f007f;
         loadColorSet(initialColor);
         break; 
     }  

@@ -36,7 +36,7 @@ static PROGMEM prog_uchar gamma[] = {
 };
 
 
-unsigned long colors[3];
+unsigned long colors[4];
 
 //get array size
 #define nrOfColorsInArray (sizeof(colors)/sizeof(unsigned long)) 
@@ -69,9 +69,9 @@ unsigned long Color(uint8_t r, uint8_t g, uint8_t b) {
 //----------------------------
 //init color set
 //----------------------------
-void initColorSet(unsigned long col[3]) {
+void initColorSet(unsigned long col[4]) {
   //copy array.. memcpy? never heard of it...
-  for (byte b=0; b<3; b++) {
+  for (byte b=0; b<4; b++) {
     colors[b] = col[b];
   }
 
@@ -127,7 +127,7 @@ unsigned long calcSmoothColor(unsigned long col1, unsigned long col2, byte pos) 
 //----------------------------
 //load colorset
 //----------------------------
-void loadColorSet(unsigned long initialColor[3]) {
+void loadColorSet(unsigned long initialColor[4]) {
 #ifdef USE_SERIAL_DEBUG      
   Serial.print("[Right] load new color: ");
   Serial.println(initialColor[0], HEX);      

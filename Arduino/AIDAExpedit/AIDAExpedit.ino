@@ -58,8 +58,14 @@
 //total nr of led modules
 #define NUM_LEDS 115
 
+//xresolution 
+#define XRES 4
+
+//xresolution 
+#define YRES 8
+
 //effective buffer size
-#define BUFFER_SIZE 32
+#define BUFFER_SIZE (XRES*YRES)
 
 //not all modules are visible! 
 #define NUM_VISIBLE_LEDS (BUFFER_SIZE*LED_GROUP)
