@@ -93,11 +93,11 @@ void generateContent() {
         break;
       case 1:
         //high heel mode
-        buffer[i] = 100+i;
+        buffer[i] = 70+i;
         break;
       case 2:
         //disco mode
-        buffer[i] = 200+i;
+        buffer[i] = 140+i;
         break;
     }  
   }
@@ -105,9 +105,6 @@ void generateContent() {
   byte srcOfs=0;
   //map buffer to output
   for (unsigned int i=0; i<NUM_VISIBLE_LEDS; i++) {
-    if (i%LED_GROUP==0) {
-      srcOfs++;
-    }
     
     unsigned long col = getSmoothColor(buffer[srcOfs]);    
 
@@ -123,10 +120,18 @@ void generateContent() {
       Serial.print(i, DEC);
       Serial.print(", pyspos: ");
       Serial.print(ofs, DEC);
+      Serial.print(", srcOfs: ");
+      Serial.print(srcOfs, DEC);
+      Serial.print(", buffer: ");
+      Serial.print(buffer[srcOfs], DEC);            
       Serial.print(", color: ");
       Serial.println(col, HEX);      
     //}
 #endif
+
+    if (i%LED_GROUP==(LED_GROUP-1)) {
+      srcOfs++;
+    }
     
   }
   
