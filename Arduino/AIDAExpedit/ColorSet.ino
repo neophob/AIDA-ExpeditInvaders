@@ -32,7 +32,7 @@ static PROGMEM prog_uchar gamma[] = {
   0xb8,0xba,0xbd,0xbf,0xc1,0xc3,0xc5,0xc7,
   0xc9,0xcc,0xce,0xd0,0xd2,0xd4,0xd7,0xd9,
   0xdb,0xdd,0xe0,0xe2,0xe4,0xe7,0xe9,0xeb,
-  0xee,0xf0,0xf3,0xf5,0xf8,0xfa,0xfd,0xff
+  0xee,0xf0,0xf3,0xf5,0xf8,0xfa,0xfd,0xff,
 };
 
 
@@ -42,7 +42,6 @@ unsigned long colors[3];
 #define nrOfColorsInArray (sizeof(colors)/sizeof(unsigned long)) 
 
 #define MAX_COLOR_MODE 10
-byte colorMode = 0;
 
 byte boarderCount;
 byte arrayCount;
@@ -50,11 +49,20 @@ byte arrayCount;
 //----------------------------
 // Color, convert 8bit to 5bit
 //----------------------------
-unsigned int Color(uint8_t r, uint8_t g, uint8_t b) {
+unsigned long Color(uint8_t r, uint8_t g, uint8_t b) {
+  
+  //apply gamma tab
   r = pgm_read_byte(&gamma[r]); // Gamma correction table maps
   g = pgm_read_byte(&gamma[g]); // 8-bit input to 4-bit output
   b = pgm_read_byte(&gamma[b]);
-  uint32_t ret = (r << 16) | (g << 8) | b;
+  
+  //uint32_t ret = (r << 16) | (g << 8) | b;
+  unsigned long ret = r;
+  ret <<= 8;
+  ret |= g;
+  ret <<= 8;
+  ret |= b;
+  
   return ret;   
 }
 
@@ -78,7 +86,7 @@ void initColorSet(unsigned long col[3]) {
 //----------------------------
 //calc smooth color
 //----------------------------
-unsigned int getSmoothColor(byte pos) {
+unsigned long getSmoothColor(byte pos) {
   byte ofs=0;
   while (pos>boarderCount) {
     pos -= boarderCount;
@@ -92,7 +100,7 @@ unsigned int getSmoothColor(byte pos) {
 //----------------------------
 //calc smooth color
 //----------------------------
-unsigned int calcSmoothColor(unsigned long col1, unsigned long col2, byte pos) {
+unsigned long calcSmoothColor(unsigned long col1, unsigned long col2, byte pos) {
   unsigned int b= col1&255;
   unsigned int g=(col1>>8)&255;
   unsigned int r=(col1>>16)&255;
@@ -108,106 +116,22 @@ unsigned int calcSmoothColor(unsigned long col1, unsigned long col2, byte pos) {
   b=(b*mul + b2*oppositeColor) >> 8;
 
   //apply gamma tab
-  r=pgm_read_byte_near(gamma+r);
-  g=pgm_read_byte_near(gamma+g);
-  b=pgm_read_byte_near(gamma+b);
+//  r=pgm_read_byte_near(gamma+r);
+//  g=pgm_read_byte_near(gamma+g);
+//  b=pgm_read_byte_near(gamma+b);
 
-  //change next line
   return Color(b,r,g);
 }
 
-//----------------------------
-//apply color
-//----------------------------
-void applyColorSet() {
-  byte srcOfs = -1;
-
-  for (int i=0; i < NUM_LEDS; i++) {
-    if (i%LED_GROUP==0) {
-      srcOfs++;
-    }
-
-    //make sure the blind pixels are ignored
-    if (srcOfs==5) {
-      srcOfs++;
-    }
-    unsigned int col = getSmoothColor(buffer[srcOfs]);    
-
-    //the first pixel is unused
-    leds[i].r = (col>>16)&255;
-    leds[i].g = (col>>8)&255; 
-    leds[i].b = col&255;     
-  }
-
-  //blank unused modules
-/*  strip.setPixelColor(0, 0);
-  strip.setPixelColor(13, 0);
-  strip.setPixelColor(14, 0);
-  strip.setPixelColor(15, 0);
-*/
-  FastSPI_LED.show();
-
-}
 
 //----------------------------
 //load colorset
 //----------------------------
-void loadColorSet(byte colorMode) {
-  unsigned long initialColor[3] = { 
-    0xff0000, 0x00ff00, 0x0000ff   
-  }; //RGB
- 
-  switch (colorMode) {
-  case 1:
-    initialColor[0] = 0xdc323c;  //Rasta
-    initialColor[1] = 0xf0cb58;
-    initialColor[2] = 0x3c825e;
-    break; 
-  case 2:
-    initialColor[0] = 0xd3517d;  //CGA
-    initialColor[1] = 0x15a0bf;
-    initialColor[2] = 0xffc062;
-    break; 
-  case 3:
-    initialColor[0] = 0x008c53;  //Brazil
-    initialColor[1] = 0x2e00e4;
-    initialColor[2] = 0xdfea00;  
-    break; 
-  case 4:
-    initialColor[0] = 0x588F27;  //Fizz
-    initialColor[1] = 0x04BFBF;
-    initialColor[2] = 0xF7E967;  
-    break; 
-  case 5:
-    initialColor[0] = 0x9f456b;  //Kitty
-    initialColor[1] = 0x4f7a9a;
-    initialColor[2] = 0xe6c84c;  
-    break; 
-  case 6:
-    initialColor[0] = 0x323228;  //Neon
-    initialColor[1] = 0x717155;
-    initialColor[2] = 0xb4dc00;  
-    break; 
-  case 7:
-    initialColor[0] = 0x000000;  //Lantern
-    initialColor[1] = 0x0d9a0d;
-    initialColor[2] = 0xffffff;  
-    break; 
-  case 8:
-    initialColor[0] = 0x0000ff;  //Lemming
-    initialColor[1] = 0x00ff00;
-    initialColor[2] = 0xffffff;  
-    break; 
-  case 9:
-    initialColor[0] = 0x3e3e3e;  //LeBron
-    initialColor[1] = 0xd4b600;
-    initialColor[2] = 0xffffff;  
-    break; 
-  }
+void loadColorSet(unsigned long initialColor[3]) {
 #ifdef USE_SERIAL_DEBUG      
   Serial.print("[Right] load new color: ");
-  Serial.println(colorMode);      
+  Serial.println(initialColor[0], HEX);      
 #endif
-  initColorSet(initialColor);
+  initColorSet(initialColor);  
 }
 

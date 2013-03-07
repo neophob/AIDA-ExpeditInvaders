@@ -15,8 +15,16 @@ void updateButtonState(){
     if (contentMode > MAX_MODE-1)  {
        contentMode=0; 
     }
+#ifdef USE_SERIAL_DEBUG
+  Serial.print("Button pressed, new mode: ");
+  Serial.print(contentMode, DEC);
+  Serial.println("");
+#endif
+
+    initMode(contentMode);
   }
   
+/*
 #ifdef USE_SERIAL_DEBUG
   Serial.print("Button state: ");
   Serial.print(buttonState, DEC);
@@ -24,6 +32,7 @@ void updateButtonState(){
   Serial.print(contentMode, DEC);
   Serial.println("");
 #endif
+*/
   
 }
 

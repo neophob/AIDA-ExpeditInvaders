@@ -1,7 +1,5 @@
 
 /*
- * AIDA Expedit Invaders Copyright (C) 2013 michael vogt <michu@neophob.com>
-
 
 	   +----------+----------+----------+----------+  EXPEDIT REGAL#2
 	   |          |          |          |          |
@@ -46,21 +44,25 @@
 	01 |          |          |          |          | 
        PSU | ARDUNIO  |          |          |          |
 	   +----------+----------+----------+----------+
-*/
+ * AIDA Expedit Invaders Copyright (C) 2013 michael vogt <michu@neophob.com>
+ */
 #include <FastSPI_LED.h>
 #include <avr/pgmspace.h>
 
 
 // --------------------------------------------
 
+//one pixel uses 3 leds
+#define LED_GROUP 3
+
 //total nr of led modules
 #define NUM_LEDS 115
 
-//not all modules are visible!
-#define NUM_VISIBLE_LEDS (NUM_LEDS-19)
+//effective buffer size
+#define BUFFER_SIZE 32
 
-//one pixel uses 3 leds
-#define LED_GROUP 3
+//not all modules are visible! 
+#define NUM_VISIBLE_LEDS (BUFFER_SIZE*LED_GROUP)
 
 //which input pin is used to read the button
 #define INPUT_BUTTON_PIN 5
@@ -75,17 +77,17 @@
 #define USE_SERIAL_DEBUG 1
 
 //how many animation modi exist
-#define MAX_MODE 2
+#define MAX_MODE 3
 
 // --------------------------------------------
 //State of the button
 int buttonState;
 
 //display mode
-int contentMode = 0;
+byte contentMode = 0;
 
 //internal frame buffer
-byte buffer[NUM_VISIBLE_LEDS];
+byte buffer[BUFFER_SIZE];
 
 // Sometimes chipsets wire in a backwards sort of way
 struct CRGB { 
@@ -106,9 +108,11 @@ void setup() {
   Serial.println("HI AIDA!");
 #endif
 
+  //init input
   pinMode(INPUT_BUTTON_PIN, INPUT);    // declare pushbutton as input
   buttonState = 0;
   
+  //init leds
   FastSPI_LED.setLeds(NUM_LEDS);
   FastSPI_LED.setChipset(CFastSPI_LED::SPI_WS2801);
 
@@ -122,6 +126,7 @@ void setup() {
   Serial.println("Setup done");
 #endif
   
+  initMode(0);
 }
 
 
@@ -130,3 +135,8 @@ void loop() {
   
   generateContent();  
 }
+
+
+
+
+
