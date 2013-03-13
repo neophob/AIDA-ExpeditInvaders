@@ -57,11 +57,11 @@ unsigned long Color(uint8_t r, uint8_t g, uint8_t b) {
   b = pgm_read_byte(&gamma[b]);
   
   //uint32_t ret = (r << 16) | (g << 8) | b;
-  unsigned long ret = b;
+  unsigned long ret = r;
   ret <<= 8;
   ret |= g;
   ret <<= 8;
-  ret |= r;
+  ret |= b;
   
   return ret;   
 }

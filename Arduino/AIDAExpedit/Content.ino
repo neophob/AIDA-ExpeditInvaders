@@ -130,9 +130,10 @@ void generateContent() {
     ///correct offset -1
     byte ofs = pgm_read_byte(&led_mapping[i])-1;
 
+    //correct color order
     leds[ofs].r = (col>>16)&255;
-    leds[ofs].g = (col>>8)&255; 
-    leds[ofs].b = col&255;     
+    leds[ofs].b = (col>>8)&255; 
+    leds[ofs].g = col&255;     
 
 /*#ifdef USE_SERIAL_DEBUG
     //if (i==1) {
