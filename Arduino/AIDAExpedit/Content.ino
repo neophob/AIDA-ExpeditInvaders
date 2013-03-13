@@ -88,61 +88,53 @@ boolean timeOutNotReached(unsigned long lastTime, unsigned int timeout) {
 void generateContent() {
   int col, x, y, ofs;
   
+  //return if delay not reached
   if (timeOutNotReached(lastDrawTimestamp, ANIMATION_DELAY)) {
+    frames++;
     return;
   }
   
   lastDrawTimestamp = millis();
   
   //generate buffer content
-  //for (int i=0; i < BUFFER_SIZE; i++) {
     switch (contentMode) {
       case 0:
-        //fadein
-        for (y=0; y<YRES; y++) {      
-          for (x=0; x<XRES; x++) {
-            buffer[ofs++] = x+y;
-          }
-        }
-        break;
-      case 1:
         //high heel mode
-//        buffer[i] = 70+i;
         col=0; 
         ofs=0;
         for (y=0; y<YRES; y++) {      
           for (x=0; x<XRES; x++) {
-            buffer[ofs++] = (col+frames)%255;
+            buffer[ofs++] = (col+frames/2)%255;
           }
           col += 8;
         }
         break;
-      case 2:
+      case 1:
         //disco mode
-        int n = frames%255;
+        int n = (frames*4)%255;
         for (ofs=0; ofs<BUFFER_SIZE; ofs++) {          
           buffer[ofs] = n+pgm_read_byte(&discoOfs[ofs]);
         }
         
         break;
     }  
-//  }
-  
-  //TODO: if contentMode==0 switch to mode 1 if animation is finished!
+
   
   byte srcOfs=0;
   //map buffer to output
   for (unsigned int i=0; i<NUM_VISIBLE_LEDS; i++) {
     
+    //get current color
     unsigned long col = getSmoothColor(buffer[srcOfs]);    
+    
+    ///correct offset -1
+    byte ofs = pgm_read_byte(&led_mapping[i])-1;
 
-    byte ofs = pgm_read_byte(&led_mapping[i]);
-    //the first pixel is unused
     leds[ofs].r = (col>>16)&255;
     leds[ofs].g = (col>>8)&255; 
     leds[ofs].b = col&255;     
 
-#ifdef USE_SERIAL_DEBUG
+/*#ifdef USE_SERIAL_DEBUG
     //if (i==1) {
       Serial.print("Loop: ");
       Serial.print(i, DEC);
@@ -155,12 +147,11 @@ void generateContent() {
       Serial.print(", color: ");
       Serial.println(col, HEX);      
     //}
-#endif
+#endif*/
 
     if (i%LED_GROUP==(LED_GROUP-1)) {
       srcOfs++;
-    }
-    
+    }    
   }
   
   FastSPI_LED.show(); 
@@ -168,25 +159,18 @@ void generateContent() {
 }
 
 
-
+//load color set for each mode
 void initMode(byte mode) {
     unsigned long initialColor[4];
     switch (mode) {
       case 0:
-        initialColor[0] = 0xffffff;  //white to black
-        initialColor[1] = 0xffffff;
-        initialColor[2] = 0x000000;
-        initialColor[3] = 0x000000;
-        loadColorSet(initialColor);
-        break; 
       case 1:
-        initialColor[0] = 0xff0000;  //
-        initialColor[1] = 0x7f007f;
-        initialColor[2] = 0x0000ff;
-        initialColor[3] = 0x7f007f;
-        loadColorSet(initialColor);
-        break; 
-      case 2:
+      //ff0000 -> blue
+      //00ff00 -> green
+/*        initialColor[0] = 0x00ff00;  //
+        initialColor[1] = 0x00ff00;
+        initialColor[2] = 0x000000;
+        initialColor[3] = 0x0;*/
         initialColor[0] = 0xff0000;  //
         initialColor[1] = 0x7f007f;
         initialColor[2] = 0x0000ff;
@@ -195,3 +179,4 @@ void initMode(byte mode) {
         break; 
     }  
 }
+

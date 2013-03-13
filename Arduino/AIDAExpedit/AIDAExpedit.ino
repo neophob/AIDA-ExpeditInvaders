@@ -67,23 +67,23 @@
 //effective buffer size
 #define BUFFER_SIZE (XRES*YRES)
 
-//not all modules are visible! 
+//not all modules are visible!  32*3=96
 #define NUM_VISIBLE_LEDS (BUFFER_SIZE*LED_GROUP)
 
 //which input pin is used to read the button
 #define INPUT_BUTTON_PIN 5
 
 //speed for the animation
-#define ANIMATION_DELAY 512
+#define ANIMATION_DELAY 5
 
 //read the button state each X ms
-#define BUTTONDELAY 400
+#define BUTTONDELAY 150
 
 //use serial debug or not
 #define USE_SERIAL_DEBUG 1
 
 //how many animation modi exist
-#define MAX_MODE 3
+#define MAX_MODE 2
 
 // --------------------------------------------
 //State of the button
@@ -123,7 +123,7 @@ void setup() {
   FastSPI_LED.setChipset(CFastSPI_LED::SPI_WS2801);
 
   //select spi speed, 7 is very slow, 0 is blazing fast
-  FastSPI_LED.setDataRate(1);
+  FastSPI_LED.setDataRate(3);
   FastSPI_LED.init();
   FastSPI_LED.start();
   leds = (struct CRGB*)FastSPI_LED.getRGBData(); 

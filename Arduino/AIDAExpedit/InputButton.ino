@@ -1,4 +1,5 @@
 long buttonLastChecked = 0; // variable to limit the button getting checked every cycle
+byte noBounce = 0;
 
 void updateButtonState(){
   
@@ -10,7 +11,8 @@ void updateButtonState(){
   //buttonState = digitalRead(INPUT_BUTTON_PIN);  
   buttonState = analogRead(INPUT_BUTTON_PIN);   // read the input pin
 
-  if (buttonState > 512) {
+  if (buttonState > 512 && noBounce==0) {
+    noBounce = 1;
     contentMode++;
     if (contentMode > MAX_MODE-1)  {
        contentMode=0; 
@@ -22,6 +24,8 @@ void updateButtonState(){
 #endif
 
     initMode(contentMode);
+  } else if (buttonState < 513) {
+     noBounce = 0; 
   }
   
 /*

@@ -57,11 +57,11 @@ unsigned long Color(uint8_t r, uint8_t g, uint8_t b) {
   b = pgm_read_byte(&gamma[b]);
   
   //uint32_t ret = (r << 16) | (g << 8) | b;
-  unsigned long ret = r;
+  unsigned long ret = b;
   ret <<= 8;
   ret |= g;
   ret <<= 8;
-  ret |= b;
+  ret |= r;
   
   return ret;   
 }
@@ -120,7 +120,7 @@ unsigned long calcSmoothColor(unsigned long col1, unsigned long col2, byte pos) 
 //  g=pgm_read_byte_near(gamma+g);
 //  b=pgm_read_byte_near(gamma+b);
 
-  return Color(b,r,g);
+  return Color(r,g,b);
 }
 
 
