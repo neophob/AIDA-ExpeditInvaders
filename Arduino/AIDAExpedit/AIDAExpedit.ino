@@ -123,7 +123,7 @@ void setup() {
   FastSPI_LED.setChipset(CFastSPI_LED::SPI_WS2801);
 
   //select spi speed, 7 is very slow, 0 is blazing fast
-  FastSPI_LED.setDataRate(3);
+  FastSPI_LED.setDataRate(2); //try 3
   FastSPI_LED.init();
   FastSPI_LED.start();
   leds = (struct CRGB*)FastSPI_LED.getRGBData(); 

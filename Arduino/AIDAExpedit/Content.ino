@@ -104,7 +104,7 @@ void generateContent() {
         ofs=0;
         for (y=0; y<YRES; y++) {      
           for (x=0; x<XRES; x++) {
-            buffer[ofs++] = (col+frames/2)%255;
+            buffer[ofs++] = (col+frames/16)%255;
           }
           col += 8;
         }
