@@ -154,9 +154,7 @@ void generateContent() {
       srcOfs++;
     }    
   }
-  
-  FastSPI_LED.show(); 
-  frames++;
+  frames++;  
 }
 
 

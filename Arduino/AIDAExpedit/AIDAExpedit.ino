@@ -123,7 +123,7 @@ void setup() {
   FastSPI_LED.setChipset(CFastSPI_LED::SPI_WS2801);
 
   //select spi speed, 7 is very slow, 0 is blazing fast
-  FastSPI_LED.setDataRate(2); //try 3
+  FastSPI_LED.setDataRate(3); //try 3
   FastSPI_LED.init();
   FastSPI_LED.start();
   leds = (struct CRGB*)FastSPI_LED.getRGBData(); 
@@ -139,9 +139,26 @@ void setup() {
 void loop() {
   updateButtonState();
   
-  generateContent();  
+  generateContent();
+  
+  //if we use strands with differnt color order, fix this here
+  swapGBColorOrderPerString(20);
+  swapGBColorOrderPerString(100);
+    
+  FastSPI_LED.show(); 
 }
 
+//swap color order (Green and Blue) for specific stands
+void swapGBColorOrderPerString(int ofs) {
+  //one strand has 20 led modules
+  uint8_t tmp;
+  for (int i=0; i<20; i++) {
+    tmp = leds[ofs].b;
+    leds[ofs].b = leds[ofs].g; 
+    leds[ofs].g = tmp;
+    ofs++;
+  }
+}
 
 
 
